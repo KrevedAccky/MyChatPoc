@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1079585917228",
+    "firebase_url": "https://chat-poc-4e11c.firebaseio.com",
+    "project_id": "chat-poc-4e11c",
+    "storage_bucket": "chat-poc-4e11c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079585917228:android:6eaa3f4adf784d37",
+        "android_client_info": {
+          "package_name": "pro.accky.demo.chatpoc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1079585917228-5ugqv686go06p0vg7q95o8coj5l71lak.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOea6aB4aCCDAerLZPSGJCtQ9xaZEdXWc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
