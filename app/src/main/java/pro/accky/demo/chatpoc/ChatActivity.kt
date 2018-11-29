@@ -2,6 +2,7 @@ package pro.accky.demo.chatpoc
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.item_connection.view.*
@@ -38,24 +40,21 @@ class ChatActivity : AppCompatActivity() {
 
 
         val reference = FirebaseDatabase.getInstance()
-            .getReference("messages")
+            .getReference("connections")
             .child(connectionId)
+            .child("messages")
 
-        // todo not tracking changes at the moment
-        reference.loadSingle { ds ->
-            ds.children
-                .mapNotNull { msg ->
-                    msg.extractValue<Message>()
+        reference.addChildEventListener(object : ChildEventListenerAdapter() {
+            override fun onChildAdded(snapshot: DataSnapshot, prev: String?) {
+                snapshot.extractValue<Message>()?.let { message ->
+                    adapter.addMessage(message)
                 }
-                .forEach {
-                    logd(it)
-                    adapter.addMessage(it)
-                }
-        }
+            }
+        })
 
         sendButton.setOnClickListener {
             val text = textField.text.toString()
-            if(text.isNotBlank()) {
+            if (text.isNotBlank()) {
                 textField.setText("")
                 // todo add text to the firebase
             }
@@ -65,8 +64,10 @@ class ChatActivity : AppCompatActivity() {
 
 class MessagesAdapter : RecyclerView.Adapter<MessagesAdapter.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(message: Message) {
+        fun bind(message: Message, pos: Int) {
             itemView.title.text = message.toString()
+            val bgcolor = if(pos % 2 == 0) Color.WHITE else Color.LTGRAY
+            itemView.container.setBackgroundColor(bgcolor)
         }
     }
 
@@ -84,5 +85,5 @@ class MessagesAdapter : RecyclerView.Adapter<MessagesAdapter.ViewHolder>() {
 
     override fun getItemCount(): Int = messages.size
     override fun onBindViewHolder(viewHolder: MessagesAdapter.ViewHolder, pos: Int) =
-        viewHolder.bind(messages[pos])
+        viewHolder.bind(messages[pos], pos)
 }
