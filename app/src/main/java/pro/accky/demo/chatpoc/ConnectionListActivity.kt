@@ -87,6 +87,8 @@ class ConnectionListActivity : AppCompatActivity() {
                     response.body()?.token?.let { token ->
                         auth.signInWithCustomToken(token).addOnCompleteListener { task ->
                             if (task.isSuccessful) {
+                                val user = auth.currentUser
+                                logd("Current user: ${user?.uid}")
                                 connectToFirebaseDatabase()
                             }
                         }

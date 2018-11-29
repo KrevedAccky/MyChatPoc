@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_chat.*
@@ -30,6 +31,7 @@ class ChatActivity : AppCompatActivity() {
 
     private val connectionId: String get() = intent.getStringExtra(key_connection)
     private val adapter = MessagesAdapter()
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +39,11 @@ class ChatActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
-
+        auth = FirebaseAuth.getInstance()
+        if(auth.currentUser == null) {
+            sendButton.isEnabled = false
+            return
+        }
 
         val reference = FirebaseDatabase.getInstance()
             .getReference("connections")
@@ -52,11 +58,23 @@ class ChatActivity : AppCompatActivity() {
             }
         })
 
+        val s_id = auth.currentUser!!.uid
         sendButton.setOnClickListener {
             val text = textField.text.toString()
             if (text.isNotBlank()) {
                 textField.setText("")
-                // todo add text to the firebase
+                val msg = Message(
+                    body = text,
+                    s_id = s_id,
+                    sent = (System.currentTimeMillis() / 1000).toString(),
+                    type = "string"
+                )
+                val child = reference.push()
+                child.setValue(msg) { err, ref ->
+                    err?.let {
+                        toast("The message was not sent: ${err.message}")
+                    }
+                }
             }
         }
     }
